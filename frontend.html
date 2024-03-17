@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafio - Gráfico de Dados com Picos</title>
+    <!-- Adicionando Bootstrap -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #007bff;
+        }
+
+        h3 {
+            color: #343a40;
+            margin-top: 20px;
+        }
+
+        canvas {
+            width: 100%;
+            height: auto;
+            margin-top: 20px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Desafio - Gráfico de Dados com Picos</h1>
+
+        <div class="row mt-5">
+            <div class="col-md-8 offset-md-2">
+                <canvas id="myChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- Adicionando um elemento para exibir o tempo médio -->
+        <div class="row mt-5">
+            <div class="col-md-8 offset-md-2 text-center">
+                <h3>Tempo Médio entre os Picos: <span id="tempoMedio"></span></h3>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Função para fazer a requisição AJAX para o backend
+        var myChart; // Definindo myChart no escopo global
+
+function calcularPicosEBuscarDados() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            // Dados recebidos do backend
+            var response = JSON.parse(this.responseText);
+            var dados = response.dados;
+
+            // Chama a função para renderizar o gráfico
+            renderizarGrafico(dados);
+
+            // Exibe o tempo médio
+            document.getElementById('tempoMedio').innerText = dados.tempoMedio;
+
+            // Adiciona a linha no gráfico no tempo médio dos picos
+            addLinhaTempoMedio(myChart, dados.tempoMedio);
+        }
+    };
+    xhttp.open("GET", "backend.php", true); // URL do seu arquivo PHP
+    xhttp.send();
+}
+
+// Função para renderizar o gráfico com os dados recebidos
+function renderizarGrafico(dados) {
+    var ctx = document.getElementById('myChart').getContext('2d');
+    myChart = new Chart(ctx, { // Definindo myChart aqui
+        type: 'line',
+        data: {
+            labels: dados.labels.map(function(label) {
+                return label + 's'; // Adiciona 's' para indicar segundos
+            }),
+            datasets: [{
+                label: 'Valor',
+                data: dados.data,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Valor'
+                    },
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }],
+                xAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Segundos'
+                    }
+                }]
+            }
+        }
+    });
+}
+
+// Função para adicionar uma linha no gráfico no tempo médio dos picos
+function addLinhaTempoMedio(chart, tempoMedio) {
+    chart.data.datasets.push({
+        type: 'line',
+        label: 'Tempo Médio',
+        data: Array(chart.data.labels.length).fill(tempoMedio),
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 1,
+        fill: false,
+        yAxisID: 'y-axis-1',
+    });
+    chart.update();
+}
+
+// Chamada da função para buscar os dados e calcular os picos
+calcularPicosEBuscarDados();
+    </script>
+</body>
+</html>

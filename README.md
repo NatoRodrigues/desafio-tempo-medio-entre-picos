@@ -58,7 +58,7 @@ Escreva a sua solução para gerar o tempo médio usando minutos e segundos. Por
 # Dicas
 
 - Use boas práticas de algoritmos
-- A sua descição em ```SOLUTION.md``` é tão importante quanto o seu código
+- A sua descrição em ```SOLUTION.md``` é tão importante quanto o seu código
 - Use boas práticas de programação, como métodos e variáveis com nomes intuitivos
 - Não perca muito tempo com formatação do markdown. Ai menos é mais.
 - Sentiu falta de alguma coisa? Seja criativo!
